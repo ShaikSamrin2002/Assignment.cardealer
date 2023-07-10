@@ -1,0 +1,106 @@
+CAR.JAVA
+
+
+package project;
+
+class Car {
+    private String model;
+    private int showroomPrice;
+
+    public Car(String model, int showroomPrice) {
+        this.model = model;
+        this.showroomPrice = showroomPrice;
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public int getShowroomPrice() {
+        return showroomPrice;
+    }
+}
+
+CARDEALER.JAVA
+package project;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
+class CarDealer {
+    private Map<String, Car> cars;
+    private Map<String, Integer> additionalFees;
+
+    public CarDealer() {
+        cars = new HashMap<>();
+        cars.put("Polo Trendline", new Car("Polo Trendline", 870000));
+        cars.put("Polo Highline", new Car("Polo Highline", 1009000));
+        cars.put("Virtus Trendline", new Car("Virtus Trendline", 1105000));
+        cars.put("Virtus Highline", new Car("Virtus Highline", 1308000));
+        cars.put("Taigun Trendline", new Car("Taigun Trendline", 1489000));
+        cars.put("Taigun Highline", new Car("Taigun Highline", 1542000));
+        cars.put("Taigun Topline", new Car("Taigun Topline", 1771000));
+
+        additionalFees = new HashMap<>();
+        additionalFees.put("RTO", 113990);
+        additionalFees.put("Insurance", 47300);
+        additionalFees.put("TCS charges", 11000);
+        additionalFees.put("Additional Accessories", 15000);
+    }
+
+    public int calculateTotalCost(String carModel, boolean insuranceOption, boolean accessoriesOption, int dealerDiscount) {
+        Car selectedCar = cars.get(carModel);
+        if (selectedCar == null) {
+            System.out.println("Error: Invalid car model");
+            return 0;
+        }
+
+        int totalCost = selectedCar.getShowroomPrice() + additionalFees.get("RTO") + additionalFees.get("TCS charges");
+
+        if (insuranceOption) {
+            totalCost += additionalFees.get("Insurance");
+        }
+
+        if (accessoriesOption) {
+            totalCost += additionalFees.get("Additional Accessories");
+        }
+
+        if (!insuranceOption && !accessoriesOption && dealerDiscount > 0) {
+            System.out.println("Error: Please select at least one additional feature and set the dealer discount to 0.");
+            return 0;
+        }
+
+        if (dealerDiscount > 30000) {
+            dealerDiscount = 30000;
+        }
+
+        totalCost -= dealerDiscount;
+        return totalCost;
+    }
+}
+
+MAIN.JAVA
+
+package project;
+import java.util.Scanner;
+public class Main {
+    public static void main(String[] args) {
+        CarDealer carDealer = new CarDealer();
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Select car model: ");
+        String carModel = scanner.nextLine();
+
+        System.out.print("Do you need Insurance (yes/no): ");
+        boolean insuranceOption = scanner.nextLine().equalsIgnoreCase("yes");
+
+        System.out.print("Do you need Additional Accessories (yes/no): ");
+        boolean accessoriesOption = scanner.nextLine().equalsIgnoreCase("yes");
+
+        System.out.print("Dealer discount (in percentage or rupees): ");
+        int dealerDiscount = scanner.nextInt();
+
+        int totalCost = carDealer.calculateTotalCost(carModel, insuranceOption, accessoriesOption, dealerDiscount);
+        System.out.println("Total cost: " + totalCost);
+    }
+
+}
